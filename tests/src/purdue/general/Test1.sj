@@ -18,7 +18,7 @@ public class Test1{
 	 .SP->IdP: <Integer>
 	 .Client -> SP: <String>
 	 .SP->IdP: <Boolean>
-	 /*.Client: {LAB1: SP->IdP: <Double>
+	 .Client: {LAB1: SP->IdP: <Double>
            .Client -> SP: <String>
            .SP->IdP: <Integer>
            .Client -> SP: <String>
@@ -28,7 +28,7 @@ public class Test1{
            .SP->IdP: <Integer>
            .Client -> SP: <String>
            .SP->IdP: <Boolean>
-	 }*/
+	 }
 	 .SP->IdP: <Boolean>
          .Client -> SP: <String>
 	 .SP: [
@@ -72,7 +72,7 @@ public class Test1{
 			s.send(str, "SP");			
 			s.send(str, "SP");			
 			s.send(str, "SP");			
-			/*if(str.equals("hi")) {
+			if(str.equals("hi")) {
 			  s.outbranch(LAB1) {
 			    s.send(str, "SP");			
 			    s.send(str, "SP");
@@ -83,7 +83,7 @@ public class Test1{
 			    s.send(str, "SP");			
 			    s.send(str, "SP");
 			  }
-			}*/
+			}
 			s.send(str, "SP");
 			s.inwhile("SP") {
 			  s.send(str, "SP");

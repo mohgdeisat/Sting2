@@ -761,8 +761,7 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
 	
 	public SJContextElement popContextElement() throws SemanticException
 	{
-		SJContextElement poppedContext = contexts().pop();
-
+		SJContextElement poppedContext = contexts().pop();		
     popBranchContext(poppedContext);
 
     // Until here, just sorting out popped branch (and inbranch) contexts (i.e. the branch case contexts ces for branch context poppedContext).
@@ -783,6 +782,7 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
 				for (String sjname : poppedContext.channelSet())
 				{
 					SJSessionType st = poppedContext.getChannel(sjname).sessionType();
+					//System.out.println("expected: " + sjname + ": " + poppedContext.getActive(sjname) + ", " + st);
 					SJLocalChannelInstance ni = (SJLocalChannelInstance) current.getChannel(sjname);
 					
 					if (ni != null && ni.sessionType() instanceof SJUnknownType)
@@ -794,6 +794,7 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
 				for (String sjname : poppedContext.activeSessions())
 				{				
 					SJSessionType implemented = poppedContext.getImplemented(sjname);
+					//System.out.println("type: " + poppedContext);
 					if (current.sessionActive(sjname))
           // Can be not in scope but still active for e.g. try (s) { try { try (s) { ... 
 					{
@@ -808,8 +809,7 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
 							
 							if (sc.targets().contains(sjname)) // Need to build back the type structure that was stripped when the compound operation context was entered.
 							{							
-								SJSessionType expected = poppedContext.getActive(sjname);							
-
+								SJSessionType expected = poppedContext.getActive(sjname);
 								// FIXME: should treate typecase contexts just like branch contexts. 
 								// FIXME: when branches in a typecase do not properly advance session types of sockets other than the one the typecase is acting on. 
 								// Need to handle those the same way as branch contexts.
@@ -1008,6 +1008,7 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
             }
             else if(co instanceof SJInwhile)
             {
+		//String target = ((SJInbranchType_c)ce.getActive(sjname)).target();
                 implemented = sjts.SJInwhileType(implemented, ((SJInwhile_c)co).arguments().get(0).toString().replace("\"", "")); //<By MQ> MQTODO: We need the target from the protocol, not from the implementation. FIX THIS
 		
             }
@@ -1035,6 +1036,7 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
     }
 
     private void popBranchContext(SJContextElement ce) throws SemanticException {
+	//System.out.println("active: " + ce.getActive("s"));
         if (ce instanceof SJBranchContext) // Merge branches. (Does not include SJOutbranch, but does include If.)
         {
             List<SJContextElement> ces = ((SJBranchContext) ce).branches();

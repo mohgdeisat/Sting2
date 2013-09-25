@@ -1,19 +1,21 @@
+//COMPILE ERROR: This file tests missing branch label
 // To test, run IdP and SP first
-//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/general/Test7.sj -d tests/classes/
-//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test7  
+//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/compile/no/Test5.sj -d tests/classes/
+//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test5  
 package purdue.general;
 
 import sessionj.runtime.*;
 import sessionj.runtime.net.*;
 
-public class Test7{
+public class Test5{
        participant A;	
        private final noalias protocol pDisoveryService {
          participants: A, B
  	 .A: begin
-	 .B: [
-	       A->B: <Integer>
-	     ]*
+	 .B: {OP1: A->B: <Integer>,
+	      OP2: A->B: <Double>,
+	      OP3: A->B: <String>
+	     }
       }
 
 
@@ -27,8 +29,14 @@ public class Test7{
 		{			
 		  s = c.request();
 		  Integer i = new Integer(5);
-		  s.inwhile("C") {
-		    s.send(i, "B");
+		  Double d = new Double(10);
+		  s.inbranch("B") {
+		    case OP1: {
+		      s.send(i, "B");
+		    }
+		    case OP2: {
+		      s.send(d, "B");
+		    }
 		  }
 		}
 		finally{}
@@ -37,7 +45,7 @@ public class Test7{
 
 	public static void main(String[] args) throws Exception{
 		
-		Test7 a = new Test7();
+		Test5 a = new Test5();
 		
 		a.run(1);
 	}

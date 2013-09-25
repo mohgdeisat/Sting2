@@ -523,7 +523,6 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
                 (sjname, SJInbranchType.class, "[SJTypeBuildingContext_c] found inbranch, but expected: ");
             // Maybe better to explicitly check session is active (open) as well.
 		}
-		
 		pushContextElement(new SJSessionBranchContext_c(current, b, sjnames));
 	}
 
@@ -725,6 +724,7 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
 	
 	public void pushContextElement(SJContextElement ce)
 	{
+	    System.out.println("[SJTypeBuildingContext::pushContextElement()]: of type: " + ce.getClass());
 		contexts().push(ce);		
 	}
 	
@@ -762,8 +762,8 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
 	public SJContextElement popContextElement() throws SemanticException
 	{
 		SJContextElement poppedContext = contexts().pop();		
-    popBranchContext(poppedContext);
-
+		popBranchContext(poppedContext);
+		System.out.println("[SJTypeBuildingContext::popContextElement()]: Popping context element of type: " + poppedContext.getClass());
     // Until here, just sorting out popped branch (and inbranch) contexts (i.e. the branch case contexts ces for branch context poppedContext).
 		
 		if (!contexts().isEmpty())
@@ -782,7 +782,6 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
 				for (String sjname : poppedContext.channelSet())
 				{
 					SJSessionType st = poppedContext.getChannel(sjname).sessionType();
-					//System.out.println("expected: " + sjname + ": " + poppedContext.getActive(sjname) + ", " + st);
 					SJLocalChannelInstance ni = (SJLocalChannelInstance) current.getChannel(sjname);
 					
 					if (ni != null && ni.sessionType() instanceof SJUnknownType)
@@ -794,7 +793,7 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
 				for (String sjname : poppedContext.activeSessions())
 				{				
 					SJSessionType implemented = poppedContext.getImplemented(sjname);
-					//System.out.println("type: " + poppedContext);
+					//Thread.dumpStack();
 					if (current.sessionActive(sjname))
           // Can be not in scope but still active for e.g. try (s) { try { try (s) { ... 
 					{
@@ -817,22 +816,19 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
 				        if (expected != null && !(poppedContext instanceof SJTypecaseContext)) // Maybe can be better factored out with above check for branch contexts and below check.
 								{
                   // No need to check for delegated types here because delegation within a branch must be terminal (and delegateSession clears the active type).
-					    throw new SemanticException("[SJTypeBuildingContext_c] Session " + sjname + " incomplete [4], expected: " + expected);
+								    throw new SemanticException("[SJTypeBuildingContext_c] Session " + sjname + " incomplete [4], expected: " + expected);
                 }
 
                 if (poppedContext instanceof SJSessionBranchContext)
 		    {
 			// SJInbranch (and SJInbranchCase) done above with branch merging.
-			//System.out.println("branch active1: " + poppedContext.getActive(sjname));
 		    }
 		else if (poppedContext instanceof SJOutbranchContext)
 		    {
 			implemented = handleOutbranchContext(poppedContext, implemented);
-			//System.out.println("branch active2: " + poppedContext.getActive(sjname));
 		    }
 		else if (poppedContext instanceof SJSessionLoopContext)
 		    {
-			//System.out.println("loop active: " + poppedContext.getActive(sjname));
 			implemented = handleSessionLoopContext(sjname, implemented, ((SJSessionContext) poppedContext).node());
 		    }
                 else if (poppedContext instanceof SJTypecaseContext) // FIXME: should treate typecase contexts just like branch contexts.
@@ -1036,7 +1032,6 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
     }
 
     private void popBranchContext(SJContextElement ce) throws SemanticException {
-	//System.out.println("active: " + ce.getActive("s"));
         if (ce instanceof SJBranchContext) // Merge branches. (Does not include SJOutbranch, but does include If.)
         {
             List<SJContextElement> ces = ((SJBranchContext) ce).branches();
@@ -1141,8 +1136,7 @@ public class SJTypeBuildingContext_c extends SJContext_c implements SJTypeBuildi
                         SJSessionType implemented = ce.getImplemented(sjname);
 
                         SJSessionType st = inbranches.get(sjname); // Should be a single SJInbranchType node.
-
-                        ce.setActive(sjname, active == null ? null : active.child());
+                        ce.setActive(sjname, active == null ? null : null /*active.child()*/); //<By MQ> Fix Inbranch bug
                         ce.setImplemented(sjname, implemented == null ? st : implemented.append(st));
                     }
                 }

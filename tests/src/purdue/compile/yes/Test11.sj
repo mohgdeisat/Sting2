@@ -1,17 +1,22 @@
-// To test, run IdP and SP first
-//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/general/Test2.sj -d tests/classes/
-//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test2  
+//This file tests inbranch inside inwhile
+//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/compile/yes/Test11.sj -d tests/classes/
+//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test11  
 package purdue.general;
 
 import sessionj.runtime.*;
 import sessionj.runtime.net.*;
 
-public class Test2{
+public class Test11{
        participant A;	
        private final noalias protocol pDisoveryService {
          participants: A, B
  	 .A: begin
-	 .A->B: <Double>
+	 .B: [
+	       A->B: <Integer>
+	       .B: {OP1: A->B: <Integer>,
+                 OP2: A->B: <Integer>
+	       }
+	     ]*
       }
 
 
@@ -23,9 +28,19 @@ public class Test2{
 		final noalias SJSocketGroup s;
 		try (s) 
 		{			
-			s = c.request();
-			Double d = new Double(5.0);
-			s.send(d, "B"); //Error: wrong message type
+		  s = c.request();
+		  Integer i = new Integer(5);
+		  s.inwhile("C") {
+		    s.send(i, "B");
+		    s.inbranch("B") {
+		      case OP1: {
+		        s.send(i, "B");
+		      }
+		      case OP2: {
+		        s.send(i, "B");
+		      }
+		    }
+		  }
 		}
 		finally{}
 	}
@@ -33,7 +48,7 @@ public class Test2{
 
 	public static void main(String[] args) throws Exception{
 		
-		Test2 a = new Test2();
+		Test11 a = new Test11();
 		
 		a.run(1);
 	}

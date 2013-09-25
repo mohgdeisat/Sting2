@@ -1,19 +1,20 @@
-// To test, run IdP and SP first
-//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/general/Test2.sj -d tests/classes/
-//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test2  
+//COMPILE ERROR: This file tests worng inwhile loop guard
+//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/compile/no/Test12.sj -d tests/classes/
+//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test12  
 package purdue.general;
 
 import sessionj.runtime.*;
 import sessionj.runtime.net.*;
 
-public class Test2{
+public class Test12{
        participant A;	
        private final noalias protocol pDisoveryService {
          participants: A, B
  	 .A: begin
-	 .A->B: <Double>
+	 .B: [
+	   A->B: <String>
+	 ]*
       }
-
 
 	public void run(int singleSession) throws Exception {
 		
@@ -23,9 +24,12 @@ public class Test2{
 		final noalias SJSocketGroup s;
 		try (s) 
 		{			
-			s = c.request();
-			Integer i = new Integer(5);
-			s.send(i, "B"); //Error: wrong message type
+		  s = c.request();
+		  Integer i = new Integer(5);
+		  Double d = new Double(7.0);
+		  s.inwhile("C") {
+		    s.send("hi", "B");		    
+		  }
 		}
 		finally{}
 	}
@@ -33,16 +37,7 @@ public class Test2{
 
 	public static void main(String[] args) throws Exception{
 		
-		Test2 a = new Test2();
-		
+		Test12 a = new Test12();
 		a.run(1);
-	}
-	
-	String repeat(String str, int n) {
-	       String str2 =  new String();
-	       for(int i = 0; i<n; ++i) {
-	       	       str2+= str;
-	       }
-	       return str2;
-	}
+	}	
 }

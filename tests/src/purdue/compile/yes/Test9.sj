@@ -1,19 +1,22 @@
-// To test, run IdP and SP first
-//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/general/Test6.sj -d tests/classes/
-//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test6  
+//This file tests inwhile inside inwhile
+//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/compile/yes/Test9.sj -d tests/classes/
+//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test9  
 package purdue.general;
 
 import sessionj.runtime.*;
 import sessionj.runtime.net.*;
 
-public class Test6{
+public class Test9{
        participant A;	
        private final noalias protocol pDisoveryService {
          participants: A, B
  	 .A: begin
-	 .B: {OP1: A->B: <Integer>,
-	      OP2: A->B: <Double>
-	     }
+	 .B: [
+	       B: [
+	         B->A: <Integer>
+	       ]*
+	       .A->B: <Integer>
+	     ]*
       }
 
 
@@ -27,34 +30,18 @@ public class Test6{
 		{			
 		  s = c.request();
 		  Integer i = new Integer(5);
-		  Double d = new Double(10);
-		  s.inbranch("B") {
-		    case OP1: {
-		      s.send(i, "B");
+		  s.inwhile("B") {
+		    s.inwhile("B") {
+		      i = (Integer) s.receive("B");
 		    }
-		    case OP2: {
-		      s.send(d, "B");
-		    }
-		    case OP3: {
-		    }
+		    s.send(i, "B");
 		  }
 		}
 		finally{}
 	}
 	
-
 	public static void main(String[] args) throws Exception{
-		
-		Test6 a = new Test6();
-		
+		Test9 a = new Test9();
 		a.run(1);
-	}
-	
-	String repeat(String str, int n) {
-	       String str2 =  new String();
-	       for(int i = 0; i<n; ++i) {
-	       	       str2+= str;
-	       }
-	       return str2;
 	}
 }

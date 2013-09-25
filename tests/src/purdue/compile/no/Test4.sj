@@ -1,17 +1,20 @@
+//COMPILE ERROR: This file tests wrong inbranch target
 // To test, run IdP and SP first
-//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/general/Test3.sj -d tests/classes/
-//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test3  
+//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/compile/no/Test4.sj -d tests/classes/
+//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test4  
 package purdue.general;
 
 import sessionj.runtime.*;
 import sessionj.runtime.net.*;
 
-public class Test3{
+public class Test4{
        participant A;	
        private final noalias protocol pDisoveryService {
-         participants: A, B, C
+         participants: A, B
  	 .A: begin
-	 .A->B: <Double>
+	 .B: {OP1: A->B: <Integer>,
+	      OP2: A->B: <Double>
+	     }
       }
 
 
@@ -23,9 +26,17 @@ public class Test3{
 		final noalias SJSocketGroup s;
 		try (s) 
 		{			
-			s = c.request();
-			Double d = new Double(5.0);
-			s.send(d, "C"); //Error: wrong message target
+		  s = c.request();
+		  Integer i = new Integer(5);
+		  Double d = new Double(10);
+		  s.inbranch("C") {
+		    case OP1: {
+		      s.send(i, "B");
+		    }
+		    case OP2: {
+		      s.send(d, "B");
+		    }
+		  }
 		}
 		finally{}
 	}
@@ -33,7 +44,7 @@ public class Test3{
 
 	public static void main(String[] args) throws Exception{
 		
-		Test3 a = new Test3();
+		Test4 a = new Test4();
 		
 		a.run(1);
 	}

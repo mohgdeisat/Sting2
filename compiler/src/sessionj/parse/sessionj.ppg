@@ -115,6 +115,7 @@ terminal Token SJ_PARTICIPANTS;
 terminal Token SJ_PARTICIPANT;
 terminal Token SJ_PTRY;
 terminal Token SJ_PCATCH;
+terminal Token SJ_RETRY;
 //</By MQ>
 
 non terminal SJTypeNode sj_session_type;
@@ -204,6 +205,8 @@ non terminal List pcatch_list;
 non terminal SJTypeNode ptry_pcatch_node;
 //for exceptions: code elements
 non terminal Stmt ptry_statement;
+non terminal Object retry_node;
+non terminal SJTypeNode pcatch_body;
 //</By MQ>
 start with goal;
 
@@ -596,7 +599,19 @@ sj_gbranch_case ::=
 optional_exception ::=
 |	OR:a LT type:b GT:c;
 
-pcatch_node ::= SJ_PCATCH:a LPAREN type:b RPAREN LBRACE sj_gsession_type_body:c RBRACE:d
+retry_node ::= name:a COLON SJ_RETRY;
+
+pcatch_body ::= sj_gsession_type_body:a
+	{:
+		RESULT = a;
+	:}
+|	sj_gsession_type_body:a  retry_node:b
+	{:
+                RESULT = a;
+        :}
+;
+
+pcatch_node ::= SJ_PCATCH:a LPAREN type:b RPAREN LBRACE pcatch_body:c RBRACE:d
 	{:
 		RESULT = parser.nf.SJPCatchNode(parser.pos(a,d), c, b);
 	:};

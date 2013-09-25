@@ -1,5 +1,6 @@
+//COMPILE ERROR: This file tests wrong message type
 // To test, run IdP and SP first
-//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/general/Test2.sj -d tests/classes/
+//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/compile/no/Test2.sj -d tests/classes/
 //$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test2  
 package purdue.general;
 

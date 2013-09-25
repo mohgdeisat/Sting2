@@ -1,20 +1,24 @@
-// To test, run IdP and SP first
-//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/general/Test5.sj -d tests/classes/
-//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test5  
+//This file tests inwhile after inbranch
+//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/compile/yes/Test14.sj -d tests/classes/
+//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test14  
 package purdue.general;
 
 import sessionj.runtime.*;
 import sessionj.runtime.net.*;
 
-public class Test5{
+public class Test14{
        participant A;	
        private final noalias protocol pDisoveryService {
          participants: A, B
  	 .A: begin
-	 .B: {OP1: A->B: <Integer>,
-	      OP2: A->B: <Double>.
-	      OP3: A->B: <String>
-	     }
+	 .A: {
+	    OP1: A->B: <Integer>,
+	    OP2: A->B: <Double>
+	 }
+	 .B: [
+	       A->B: <Integer>
+	 ]*
+	 .A->B: <String>
       }
 
 
@@ -28,15 +32,21 @@ public class Test5{
 		{			
 		  s = c.request();
 		  Integer i = new Integer(5);
-		  Double d = new Double(10);
-		  s.inbranch("B") {
-		    case OP1: {
+		  int ii = 1;
+		  if(ii == 1) {
+		    s.outbranch(OP1) {
 		      s.send(i, "B");
 		    }
-		    case OP2: {
-		      s.send(d, "B");
+		  }
+		  else {
+		    s.outbranch(OP2) {
+		      s.send(new Double(5.0), "B");
 		    }
 		  }
+		  s.inwhile("B") {
+		    s.send(i, "B");
+		  }
+		  s.send("hi", "B");
 		}
 		finally{}
 	}
@@ -44,7 +54,7 @@ public class Test5{
 
 	public static void main(String[] args) throws Exception{
 		
-		Test5 a = new Test5();
+		Test14 a = new Test14();
 		
 		a.run(1);
 	}

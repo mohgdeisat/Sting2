@@ -1127,6 +1127,7 @@ public class SJSessionTypeChecker extends ContextVisitor // Maybe factor out an 
 	private void enterSJContext(Node parent, Node n) throws SemanticException
     // Could be factored out into an SJContextVisitor. Olivier: Ongoing, see TraverseTypeBuildingContext
 	{
+	    System.out.println("[SJSessionTypeChecker::enterSJContext()] Processing node: " + n);
     if (n instanceof TraverseTypeBuildingContext) // Should rename: it's not a context itself, but an AST node that should have enter/leave context actions.
     {
       ((TraverseTypeBuildingContext) n).enterSJContext(sjcontext);

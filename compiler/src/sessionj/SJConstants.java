@@ -23,6 +23,7 @@ public class SJConstants
         public static final String SJ_KEYWORD_PARTICIPANT = "participant"; //Added the gprotocol keyword
         public static final String SJ_KEYWORD_PTRY = "ptry"; //Added the gprotocol keyword
         public static final String SJ_KEYWORD_PCATCH = "pcatch"; //Added the gprotocol keyword
+        public static final String SJ_KEYWORD_RETRY = "retry";
         //</By MQ>
 	public static final String SJ_KEYWORD_CBEGIN = "begin"; //<By MQ> Changed "cbegin" keyword to "begin"
 	public static final String SJ_KEYWORD_SBEGIN = "sbegin";
@@ -138,6 +139,7 @@ public class SJConstants
     public static final String SJ_STRING_GBEGIN = "begin";
     public static final String SJ_STRING_PTRY = "ptry";
     public static final String SJ_STRING_PCATCH = "pcatch";
+    public static final String SJ_STRING_retry = "retry";
     //</By MQ>
 	public static final String SJ_INBRANCH_LABEL_FIELD_PREFIX = "_sjbranch_";
     public static final String SJ_WHILE_PREFIX = "_sjwhile_";

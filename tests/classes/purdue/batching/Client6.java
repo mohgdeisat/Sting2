@@ -133,7 +133,7 @@ public class Client6 {
     public Client6() { super(); }
     
     final public static String jlc$CompilerVersion$jl = "2.3.0";
-    final public static long jlc$SourceLastModified$jl = 1376322788000L;
+    final public static long jlc$SourceLastModified$jl = 1377838953000L;
     final public static String jlc$ClassType$jl =
       ("H4sIAAAAAAAAAO0cbWwcxXXuzt828VcSkjjfMZC0ybnhIyI4EGLHJg4Xx8RO" +
        "CEbgrO/G5032dpfd\nOftCKSUgCFA1EoIApaFREW3El0qCgEqltAgoFCi0aR" +

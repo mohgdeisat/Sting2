@@ -1,20 +1,23 @@
 // To test, run IdP and SP first
-//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/general/Test5.sj -d tests/classes/
-//$ bin/sessionj -cp tests/classes/ purdue.generaltest.Test5  
-package purdue.general;
+//$ bin/sessionjc -cp tests/classes/ tests/src/purdue/retry/Client.sj -d tests/classes/
+//$ bin/sessionj -cp tests/classes/ purdue.retry_test.Client  
+package purdue.retry_test;
 
 import sessionj.runtime.*;
 import sessionj.runtime.net.*;
 
-public class Test5{
-       participant A;	
+public class Client{
+       participant client;	
        private final noalias protocol pDisoveryService {
-         participants: A, B
- 	 .A: begin
-	 .B: {OP1: A->B: <Integer>,
-	      OP2: A->B: <Double>,
-	      OP3: A->B: <String>
-	     }
+         participants: client, server
+ 	 .client: begin
+	 .ptry {
+	   client -> server: <String>
+	 }
+	 pcatch(Exception) {
+	   client -> server: <String>
+	   //client: retry;
+	 }
       }
 
 
@@ -27,15 +30,12 @@ public class Test5{
 		try (s) 
 		{			
 		  s = c.request();
-		  Integer i = new Integer(5);
-		  Double d = new Double(10);
-		  s.inbranch("B") {
-		    case OP1: {
-		      s.send(i, "B");
-		    }
-		    case OP2: {
-		      s.send(d, "B");
-		    }
+		  String str = "hi";
+		  ptry {
+		    s.send(str, "server");
+		  }
+		  catch(Exception ex) {
+		    s.send(str, "server");
 		  }
 		}
 		finally{}
@@ -44,7 +44,7 @@ public class Test5{
 
 	public static void main(String[] args) throws Exception{
 		
-		Test5 a = new Test5();
+		Client a = new Client();
 		
 		a.run(1);
 	}
